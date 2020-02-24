@@ -1,18 +1,17 @@
-﻿using System.Collections.Generic;
-using System.Linq;
-using Assets.Scripts.Roads;
-using Assets.Scripts.Utility;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class RoadGenerationUI : MonoBehaviour
 {
     private GameObject _mainCamera;
     private Camera _cameraComponent;
 
+    private GameObject _manager;
+
     // Start is called before the first frame update
     private void Start()
     {
         _mainCamera = GameObject.FindGameObjectWithTag("MainCamera");
+        _manager = GameObject.FindGameObjectWithTag("Manager");
 
         if (_mainCamera != null)
         {
@@ -48,7 +47,7 @@ public class RoadGenerationUI : MonoBehaviour
 
         if (Input.GetMouseButtonDown(0))
         {
-            GameObject.FindGameObjectWithTag("Manager").GetComponent<RoadGenerator>().AddPoints(mousePos);
+            _manager.GetComponent<RoadGenerator>().AddPoints(mousePos);
         }
     }
 
@@ -56,7 +55,10 @@ public class RoadGenerationUI : MonoBehaviour
     {
         if (Input.GetKeyDown(KeyCode.S))
         {
-            GameObject.FindGameObjectWithTag("Manager").GetComponent<RoadGenerator>().CalcRoadSubDivision();
+            Debug.Log("Road sub division process started");
+
+            _manager.GetComponent<BuildingGenerator>().ClearBuildings();
+            _manager.GetComponent<RoadGenerator>().CalcRoadSubDivision();
         }
     }
 }

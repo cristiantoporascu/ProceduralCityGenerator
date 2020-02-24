@@ -1,5 +1,4 @@
-﻿using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using Assets.Scripts.Utility;
 using UnityEngine;
 
@@ -9,10 +8,13 @@ namespace Assets.Scripts.Roads
     {
         public static List<Road> SplitRoad(Road road)
         {
+            // Generate the new list of roads that will be passed back
             List<Road> subDividedRoads = new List<Road>();
 
+            // Generate a random percentage for division
             float splitPercentage = Random.Range(0.1f, 0.95f);
 
+            // Initiate the positions as vector 3
             Vector3 startPos = road.StartPoint.GetVector3Pos();
             Vector3 endPos = road.EndPoint.GetVector3Pos();
             float splitLength = road.Length();
@@ -21,6 +23,8 @@ namespace Assets.Scripts.Roads
             Vector3 dir = (startPos - endPos).normalized;
             Vector3 splitPos = endPos + (dir * splitLength);
 
+            // Calculate the perpendicular on the division location
+            // Also generate the division points and the adjacent roads
             Vector3 perpendicularDown = Vector3.Cross(startPos - endPos, Vector3.down).normalized;
             float newRoadLength = Random.Range(0.5f, 9.0f); // TODO: Sliders for values 
             Vector3 splittedRoadEnd = splitPos + (perpendicularDown * newRoadLength);
@@ -37,20 +41,39 @@ namespace Assets.Scripts.Roads
                 new Point(new Vector2(splittedRoadOtherEnd.x, splittedRoadOtherEnd.z))
             );
 
+            // Check if the new generated roads intersect with either of the existing roads
             bool firstSideSplitValid = false;
             bool secondSideSplitValid = false;
 
-            if (!RoadIntersecting(FirstSideSplit, 0.5f))
+            if (!RoadIntersecting(FirstSideSplit, 1.0f))
             {
                 RoadGenerator.RoadList.RemoveAll(r => r.Equals(FirstSideSplit));
                 subDividedRoads.Add(FirstSideSplit);
+                firstSideSplitValid = true;
             }
 
-            if (!RoadIntersecting(SecondSideSplit, 0.5f))
+            if (!RoadIntersecting(SecondSideSplit, 1.0f))
             {
                 RoadGenerator.RoadList.RemoveAll(r => r.Equals(SecondSideSplit));
                 subDividedRoads.Add(SecondSideSplit);
+                secondSideSplitValid = true;
             }
+
+            //
+            // Temp disable as altering code functionality
+            //
+            //if (firstSideSplitValid || secondSideSplitValid)
+            //{
+            //    RoadGenerator.IntersectionsList.Add(
+            //        new Intersection(
+            //            new List<Point> {
+            //                new Point(
+            //                    new Vector2(splitPos.x, splitPos.z)
+            //                    )
+            //                }
+            //            )
+            //        );
+            //}
 
             subDividedRoads.Add(road);
 
@@ -64,9 +87,9 @@ namespace Assets.Scripts.Roads
                 bool closeToStart = DistanceFromPointToRoad(road.StartPoint, currentRoad) < maxAccepted;
                 bool closeToEnd = DistanceFromPointToRoad(road.EndPoint, currentRoad) < maxAccepted;
 
-                bool minRoadDistance = MinRoadToRoadDistance(currentRoad, road, 0.5f);
+                bool minToRoadDistance = MinRoadToRoadDistance(currentRoad, road, 0.5f);
 
-                if (closeToEnd || closeToStart || minRoadDistance)
+                if (closeToEnd || closeToStart || minToRoadDistance)
                     return true;
             }
 
