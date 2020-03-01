@@ -1,0 +1,2 @@
+E:\Projects\Cov University\303COM\ProceduralCityGenerator\ProceduralCityGenerator\obj\Debug\Assembly-CSharp.csprojAssemblyReference.cache
+E:\Projects\Cov University\303COM\ProceduralCityGenerator\ProceduralCityGenerator\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache

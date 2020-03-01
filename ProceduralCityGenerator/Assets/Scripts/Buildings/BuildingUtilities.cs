@@ -1,5 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+﻿using System.Linq;
 using Assets.Scripts.Roads;
 using UnityEngine;
 
@@ -36,43 +35,50 @@ namespace Assets.Scripts.Buildings
 
                 GameObject building = null;
 
-                if (perlinVal < .25f)
+                var descOrderBuildPrefabList =
+                    buildingGenerator.PcgEditorBuildings.OrderByDescending(o => o.ActiveRange).ToList();
+                foreach (var prefab in descOrderBuildPrefabList)
                 {
-                    building = buildingGenerator.BuildingPrefabSmall;
+                    building = prefab.ActiveRange < perlinVal ? prefab.Prefab : null;
+
+                    if (building != null)
+                    {
+                        break;
+                    }
+
+                    if (descOrderBuildPrefabList.IndexOf(prefab) == descOrderBuildPrefabList.Count - 1)
+                    {
+                        building = descOrderBuildPrefabList[0].Prefab;
+                    }
                 }
-                else if (perlinVal < .5f)
+
+                if (building != null)
                 {
-                    building = buildingGenerator.BuildingPrefabMedium;
+                    // Road offset based on the length of the building
+                    Vector3 roadOffset = bROffset.normalized * (building.GetComponent<Transform>().lossyScale.z / 2 + current.Lanes / 2.0f);
+                    Vector3 postPosCenter = prePosCenter + roadOffset;
+
+                    if (f - building.GetComponent<Transform>().lossyScale.x < 0 || f + building.GetComponent<Transform>().lossyScale.x > length)
+                        continue;
+
+                    building.transform.position = postPosCenter;
+                    building.transform.LookAt(prePosCenter);
+
+                    // Move the building by the scale of the center of the building
+                    building.transform.position =
+                        new Vector3(
+                            building.transform.position.x,
+                            building.transform.position.y + building.transform.lossyScale.y / 2,
+                            building.transform.position.z
+                        );
+
+                    // Validate building and set output
+                    GameObject output = buildingGenerator.InstantiateValidProcessedBuilding(building);
+
+                    // The building has been validated and is placed in the scene
+                    if (output != null)
+                        BuildingGenerator.BuildingList.Add(output);
                 }
-                else
-                {
-                    building = buildingGenerator.BuildingPrefabLarge;
-                }
-
-                // Road offset based on the length of the building
-                Vector3 roadOffset = bROffset.normalized *  building.GetComponent<Transform>().lossyScale.z;
-                Vector3 postPosCenter = prePosCenter + roadOffset;
-
-                if (f - building.GetComponent<Transform>().lossyScale.x < 0 || f + building.GetComponent<Transform>().lossyScale.x > length)
-                    continue;
-
-                building.transform.position = postPosCenter;
-                building.transform.LookAt(prePosCenter);
-
-                // Move the building by the scale of the center of the building
-                building.transform.position = 
-                    new Vector3(
-                        building.transform.position.x, 
-                        building.transform.position.y + building.transform.lossyScale.y / 2, 
-                        building.transform.position.z
-                    );
-
-                // Validate building and set output
-                GameObject output = buildingGenerator.InstantiateValidProcessedBuilding(building);
-
-                // The building has been validated and is placed in the scene
-                if(output != null)
-                    BuildingGenerator.BuildingList.Add(output);
             }
         }
 

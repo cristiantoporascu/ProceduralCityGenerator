@@ -5,13 +5,15 @@ namespace Assets.Scripts.Roads
 {
     public class Road
     {
+        public int Lanes;
         public Point StartPoint;
         public Point EndPoint;
 
-        public Road(Point start, Point end)
+        public Road(Point start, Point end, int lanes = 1)
         {
             StartPoint = new Point(start.Position, this);
             EndPoint = new Point(end.Position, this);
+            Lanes = lanes;
         }
 
         public Point GetOther(Point current)

@@ -7,6 +7,8 @@ TagManager:
   - Road
   - Manager
   - Building
+  - GeneratedRoadData
+  - GeneratedBuildingData
   layers:
   - Default
   - TransparentFX

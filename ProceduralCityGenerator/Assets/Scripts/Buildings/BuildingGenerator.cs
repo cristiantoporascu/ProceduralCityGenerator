@@ -1,12 +1,11 @@
 ﻿using System.Collections.Generic;
 using Assets.Scripts.Buildings;
+using Assets.Scripts.PCGEditor;
 using UnityEngine;
 
 public class BuildingGenerator : MonoBehaviour
 {
-    public GameObject BuildingPrefabSmall;
-    public GameObject BuildingPrefabMedium;
-    public GameObject BuildingPrefabLarge;
+    [HideInInspector] public List<BuildingsPrefabsEditor> PcgEditorBuildings;
 
     [HideInInspector] public static GameObject BuildingParent;
     [HideInInspector] public static Transform BuildingParentTransform;
@@ -28,7 +27,7 @@ public class BuildingGenerator : MonoBehaviour
     // Update is called once per frame
     private void Update() { }
 
-    public void ProcessBuildings()
+    private void ProcessBuildings()
     {
         ClearBuildings();
 
@@ -66,5 +65,15 @@ public class BuildingGenerator : MonoBehaviour
             DestroyImmediate(building);
         }
         BuildingList.Clear();
+
+        var parentBuildingData = GameObject.FindGameObjectWithTag("GeneratedBuildingData");
+        if(parentBuildingData != null) 
+            DestroyImmediate(parentBuildingData);
+    }
+
+
+    public void BuildingPlacementEventListener()
+    {
+        ProcessBuildings();
     }
 }

@@ -1,0 +1,39 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: c7b3674e13be0084498c9b6212f25735, type: 3}
+  m_Name: PCGToolConfig
+  m_EditorClassIdentifier: Assembly-CSharp::PcgEditorProps
+  PcgEditorRoads:
+    LaneDropdownIndex: 2
+    NumberLanes: 4
+    RoadLengthMin: 13.583242
+    RoadLengthMinLimit: 1
+    RoadLengthMax: 19.279884
+    RoadLengthMaxLimit: 20
+    RoadSpacingMin: 1
+    RoadSpacingMinLimit: 1
+    RoadSpacingMax: 2.0787196
+    RoadSpacingMaxLimit: 20
+  PcgEditorBuildings:
+    PrefabGroupFoldout: 1
+    NumberPrefabs: 3
+    PrefabsListFoldout: 1
+    Prefabs:
+    - Prefab: {fileID: 932785019854032954, guid: fc1e7551c153013498eecc742467324e,
+        type: 3}
+      ActiveRange: 0.25
+    - Prefab: {fileID: 6808259099497896041, guid: 7afb34a2a68d63245955193e9c406a36,
+        type: 3}
+      ActiveRange: 0.5
+    - Prefab: {fileID: 5726908399242114731, guid: fe02c6188caeb094db75488e705198a5,
+        type: 3}
+      ActiveRange: 0.75

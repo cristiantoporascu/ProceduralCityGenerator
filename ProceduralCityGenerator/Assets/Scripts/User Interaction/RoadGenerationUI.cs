@@ -25,7 +25,6 @@ public class RoadGenerationUI : MonoBehaviour
         if (CameraFound())
         {
            LeftClickEvent();
-           SubDivisionEvent();
         }
     }
 
@@ -48,17 +47,6 @@ public class RoadGenerationUI : MonoBehaviour
         if (Input.GetMouseButtonDown(0))
         {
             _manager.GetComponent<RoadGenerator>().AddPoints(mousePos);
-        }
-    }
-
-    private void SubDivisionEvent()
-    {
-        if (Input.GetKeyDown(KeyCode.S))
-        {
-            Debug.Log("Road sub division process started");
-
-            _manager.GetComponent<BuildingGenerator>().ClearBuildings();
-            _manager.GetComponent<RoadGenerator>().CalcRoadSubDivision();
         }
     }
 }
