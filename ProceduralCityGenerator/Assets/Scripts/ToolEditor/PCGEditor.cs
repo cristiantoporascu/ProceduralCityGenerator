@@ -115,6 +115,75 @@ public class PCGEditor : EditorWindow
         {
             _manager.GetComponent<RoadGenerator>().ClearRoads();
         }
+
+        // -------- ROAD SIDEWALK VARIANTS -------- \\
+        GUILayout.Space(15f);
+        EditorGUILayout.LabelField("Road sidewalk");
+
+        EditorGUILayout.BeginHorizontal();
+        GUILayout.Space(PCGEditorStyling.SubCompLeftSpacing);
+
+        EditorGUILayout.LabelField("Number");
+        _pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants =
+            EditorGUILayout.IntField(_pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants);
+
+        if (_pcgEditorProps.PcgEditorRoads.PrefabsSidewalks != null)
+        {
+            if (_pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants > _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Count)
+            {
+                for (var i = 0; i < _pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants - _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Count; i++)
+                {
+                    _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Add(null);
+                }
+            }
+            else if (_pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants < _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Count)
+            {
+                _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks
+                    .RemoveRange(_pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants, _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Count - _pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants);
+            }
+        }
+        else
+        {
+            _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks = new List<GameObject>();
+        }
+        EditorGUILayout.EndHorizontal();
+
+        if (_pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants > 0)
+        {
+            EditorGUILayout.BeginHorizontal();
+
+            GUILayout.Space(PCGEditorStyling.SubCompLeftSpacing);
+            _pcgEditorProps.PcgEditorRoads.PrefabsListFoldout =
+                EditorGUILayout.Foldout(_pcgEditorProps.PcgEditorRoads.PrefabsListFoldout,
+                    new GUIContent("Prefabs", "GameObject => " +
+                                              "The game object which you want to be placed in the scene up which allows multiple variants of sidewalks."));
+
+            if (_pcgEditorProps.PcgEditorRoads.PrefabsListFoldout)
+            {
+                GUILayout.Space(PCGEditorStyling.SubCompLeftSpacing);
+                EditorGUILayout.BeginVertical();
+
+                for (var i = 0; i < _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Count; i++)
+                {
+                    _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks[i] = EditorGUILayout
+                        .ObjectField(_pcgEditorProps.PcgEditorRoads.PrefabsSidewalks[i], typeof(GameObject), true) as GameObject;
+                }
+
+                EditorGUILayout.EndVertical();
+            }
+
+            EditorGUILayout.EndHorizontal();
+        }
+
+        GUILayout.Space(10f);
+        if (GUILayout.Button("Run Road Sidewalk Generator"))
+        {
+            _manager.GetComponent<RoadGenerator>().GenerateRoadSidewalkListener();
+        }
+        if (GUILayout.Button("Run Clear Sidewalks"))
+        {
+            _manager.GetComponent<RoadGenerator>().ClearRoadSidewalks();
+        }
     }
 
     private void BuildingSettingsGui()
@@ -173,7 +242,7 @@ public class PCGEditor : EditorWindow
                     {
                         EditorGUILayout.BeginHorizontal();
                         _pcgEditorProps.PcgEditorBuildings.Prefabs[i].Prefab = EditorGUILayout
-                            .ObjectField(_pcgEditorProps.PcgEditorBuildings.Prefabs[i].Prefab, typeof(GameObject), true, new[] { GUILayout.Width(210f) }) as GameObject;
+                            .ObjectField(_pcgEditorProps.PcgEditorBuildings.Prefabs[i].Prefab, typeof(GameObject), true) as GameObject;
                         _pcgEditorProps.PcgEditorBuildings.Prefabs[i].ActiveRange = EditorGUILayout.FloatField(_pcgEditorProps.PcgEditorBuildings.Prefabs[i].ActiveRange);
                         EditorGUILayout.EndHorizontal();
                     }
@@ -236,6 +305,9 @@ public class PCGEditor : EditorWindow
 
     private void RenderGui()
     {
+        _pcgEditorProps.WindowScrollViewPos = 
+            GUILayout.BeginScrollView(_pcgEditorProps.WindowScrollViewPos, false, false);
+
         PCGEditorStyling.InitStyle();
 
         GUILayout.Space(20f);
@@ -251,6 +323,9 @@ public class PCGEditor : EditorWindow
         SaveGeneratedMap();
 
         SaveDataInComponent();
+
+        GUILayout.Space(30f);
+        GUILayout.EndScrollView();
     }
 
     private void SaveDataInComponent()

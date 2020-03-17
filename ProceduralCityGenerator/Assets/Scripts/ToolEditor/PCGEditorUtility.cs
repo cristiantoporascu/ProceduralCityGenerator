@@ -9,7 +9,7 @@ namespace Assets.Scripts.PCGEditor
         public static void InputLabel(string labelName)
         {
             PCGEditorStyling.ResetStyles();
-            EditorGUILayout.LabelField(labelName, PCGEditorStyling.GetCurrentStyle(), new []{GUILayout.Width(110)});
+            EditorGUILayout.LabelField(labelName, PCGEditorStyling.GetCurrentStyle());
         }
 
         public static void HeadlineLabel(string labelName)

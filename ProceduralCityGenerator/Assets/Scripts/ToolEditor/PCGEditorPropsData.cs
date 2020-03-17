@@ -21,6 +21,10 @@ namespace Assets.Scripts.PCGEditor
 
         public float RoadSpacingMax = 10.0f;
         public float RoadSpacingMaxLimit = 20.0f;
+
+        public int NumberSideWalkVariants;
+        public bool PrefabsListFoldout;
+        public List<GameObject> PrefabsSidewalks;
     }
 
     [Serializable]

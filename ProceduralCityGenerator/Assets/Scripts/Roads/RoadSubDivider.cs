@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Assets.Scripts.Utility;
 using UnityEngine;
 
@@ -22,6 +23,7 @@ namespace Assets.Scripts.Roads
 
             Vector3 dir = (startPos - endPos).normalized;
             Vector3 splitPos = endPos + (dir * splitLength);
+            Point splitPoint = new Point(new Vector2(splitPos.x, splitPos.z));
 
             // Calculate the perpendicular on the division location
             // Also generate the division points and the adjacent roads
@@ -30,7 +32,7 @@ namespace Assets.Scripts.Roads
             Vector3 splittedRoadEnd = splitPos + (perpendicularDown * newRoadLength);
 
             Road FirstSideSplit = new Road(
-                new Point(new Vector2(splitPos.x, splitPos.z)), 
+                splitPoint, 
                 new Point(new Vector2(splittedRoadEnd.x, splittedRoadEnd.z)),
                 roadGenerator.PcgEditorRoads.NumberLanes
                 );
@@ -38,7 +40,7 @@ namespace Assets.Scripts.Roads
             Vector3 splittedRoadOtherEnd = splitPos + (perpendicularDown * newRoadLength * -1);
 
             Road SecondSideSplit = new Road(
-                new Point(new Vector2(splitPos.x, splitPos.z)),
+                splitPoint,
                 new Point(new Vector2(splittedRoadOtherEnd.x, splittedRoadOtherEnd.z)),
                 roadGenerator.PcgEditorRoads.NumberLanes
             );
@@ -61,25 +63,28 @@ namespace Assets.Scripts.Roads
                 secondSideSplitValid = true;
             }
 
-            //
-            // Temp disable as altering code functionality
-            //
-            //if (firstSideSplitValid || secondSideSplitValid)
-            //{
-            //    RoadGenerator.IntersectionsList.Add(
-            //        new Intersection(
-            //            new List<Point> {
-            //                new Point(
-            //                    new Vector2(splitPos.x, splitPos.z)
-            //                    )
-            //                }
-            //            )
-            //        );
-            //}
 
-            subDividedRoads.Add(road);
+            if (firstSideSplitValid || secondSideSplitValid)
+            {
+                var segOutput = Segmentation(road, splitPoint);
+                subDividedRoads = subDividedRoads.Concat(segOutput).ToList();
+
+                roadGenerator.CheckUnusedRoadMeshes(road);
+            }
+            else
+            {
+                subDividedRoads.Add(road);
+            }
 
             return subDividedRoads;
+        }
+
+        private static List<Road> Segmentation(Road road, Point splitPoint)
+        {
+            Road leftSeg = new Road(road.StartPoint, splitPoint, road.Lanes);
+            Road rightSeg = new Road(road.EndPoint, splitPoint, road.Lanes);
+
+            return new List<Road> { leftSeg, rightSeg };
         }
 
         private static bool RoadIntersecting(Road currentRoad, float maxAccepted, float minAccepted)

@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using Assets.Scripts.Buildings;
 using Assets.Scripts.PCGEditor;
 using Assets.Scripts.Roads;
 using Assets.Scripts.Utility;
 using UnityEngine;
+using Random = System.Random;
 
 public class RoadGenerator : MonoBehaviour
 {
@@ -16,6 +18,8 @@ public class RoadGenerator : MonoBehaviour
     public static List<Intersection> IntersectionsList = new List<Intersection>();
     public static List<Road> RoadList = new List<Road>();
     public static List<Point> CurrentPoints = new List<Point>();
+
+    public static List<GameObject> SidewalkList = new List<GameObject>();
 
     [HideInInspector] public PCGEditorRoads PcgEditorRoads;
 
@@ -51,12 +55,21 @@ public class RoadGenerator : MonoBehaviour
         {
             for(var i = 0; i < roadGenData.transform.childCount; i++)
             {
-                var roadGO = roadGenData.transform.GetChild(i).gameObject;
+                var tempGO = roadGenData.transform.GetChild(i).gameObject;
 
-                if (!CheckRoadExists(roadGO) && roadGO != null)
+                if (tempGO != null)
                 {
-                    RoadList.Add(GenRoadEntryFromLineRenderer(roadGO));
+                    if (tempGO.tag == "Road" && !CheckRoadExists(tempGO))
+                    {
+                        RoadList.Add(GenRoadEntryFromLineRenderer(tempGO));
+                    }
+                    else if (tempGO.tag == "Sidewalks")
+                    {
+                        tempGO.transform.parent = _roadParentTransform;
+                        SidewalkList.Add(tempGO);
+                    }
                 }
+                
             }
             DestroyImmediate(roadGenData);
         }
@@ -128,10 +141,10 @@ public class RoadGenerator : MonoBehaviour
         // Get perpendicular on road to calculate the width of the mesh
         Vector3 sides = Vector3.Cross(meshStartPoint - meshEndPoint, Vector3.down).normalized;
 
-        Vector3 meshTL = meshStartPoint + sides * (0.5f * PcgEditorRoads.NumberLanes);
-        Vector3 meshTR = meshStartPoint - sides * (0.5f * PcgEditorRoads.NumberLanes);
-        Vector3 meshBL = meshEndPoint + sides * (0.5f * PcgEditorRoads.NumberLanes);
-        Vector3 meshBR = meshEndPoint - sides * (0.5f * PcgEditorRoads.NumberLanes);
+        Vector3 meshTL = meshStartPoint + sides * (0.5f * current.Lanes);
+        Vector3 meshTR = meshStartPoint - sides * (0.5f * current.Lanes);
+        Vector3 meshBL = meshEndPoint + sides * (0.5f * current.Lanes);
+        Vector3 meshBR = meshEndPoint - sides * (0.5f * current.Lanes);
 
         // Set the new vertices of the mesh
         vertices.AddRange(new Vector3[] { meshTL, meshTR, meshBL, meshBR });
@@ -159,9 +172,11 @@ public class RoadGenerator : MonoBehaviour
         // Assign the new props to the mesh
         newGameObject.GetComponent<MeshFilter>().mesh = mesh;
 
-        // Change material based on road width TODO: Maybe set a custom material based on dropdown
+        // Change material based on road width
         newGameObject.GetComponent<MeshRenderer>().material =
-            Resources.Load<Material>("RoadMaterials/" + PcgEditorRoads.NumberLanes);
+            Resources.Load<Material>("RoadMaterials/" + current.Lanes);
+
+        newGameObject.GetComponent<SaveRoadProp>().Lanes = current.Lanes;
 
         // Reference points for easier check
         LineRenderer roadLineRenderer = newGameObject.GetComponent<LineRenderer>();
@@ -199,10 +214,11 @@ public class RoadGenerator : MonoBehaviour
 
         Vector3 startPos = currentLineRenderer.GetPosition(0);
         Vector3 endPos = currentLineRenderer.GetPosition(1);
+
         return new Road(
             new Point(new Vector2(startPos.x, startPos.z)), 
             new Point(new Vector2(endPos.x, endPos.z)),
-            int.Parse(current.GetComponent<MeshRenderer>().material.name.Split(' ')[0]) // TODO: Somehow save the state
+            current.GetComponent<SaveRoadProp>().Lanes
             );
     }
 
@@ -217,11 +233,125 @@ public class RoadGenerator : MonoBehaviour
         RoadList.Clear();
     }
 
+    public void CheckUnusedRoadMeshes(Road removedRoad)
+    {
+        var roadGameObjects = GameObject.FindGameObjectsWithTag("Road");
+
+        foreach (var roadGO in roadGameObjects)
+        {
+            if (GenRoadEntryFromLineRenderer(roadGO).Equals(removedRoad))
+            {
+                DestroyImmediate(roadGO);
+            }
+        }
+    }
+
+    private void GenerateRoadSidewalk()
+    {
+        foreach (var road in RoadList)
+        {
+            // Initiate the positions as vector 3
+            Vector3 startPos = road.StartPoint.GetVector3Pos();
+            Vector3 endPos = road.EndPoint.GetVector3Pos();
+            Vector3 dir = (startPos - endPos).normalized;
+            float length = road.Length();
+
+            bool processRightSide = true;
+            var randomizer = new Random();
+            for (float f = 0.5f; f < length || processRightSide; f += 1.0f)
+            {
+                // If one side has been completed, follow the other side
+                if (f > length && processRightSide)
+                {
+                    processRightSide = false;
+                    f = 0.5f;
+                }
+
+                // The offset of which the sidewalk has to move on the side of the road
+                Vector3 bROffset = new Vector3(-dir.z, 0, dir.x);
+                if (processRightSide)
+                    bROffset *= -1;
+
+                // The position of the sidewalk before offsetting the road
+                Vector3 prePosCenter = endPos + (dir * f);
+                GameObject sidewalk = PcgEditorRoads.PrefabsSidewalks[randomizer.Next(0, PcgEditorRoads.NumberSideWalkVariants)];
+
+                if (sidewalk != null)
+                {
+                    Debug.Log("Sidewalk object");
+                    var sidewalkCollider = sidewalk.GetComponent<BoxCollider>();
+
+                    // Road offset based on the length of the building
+                    Vector3 roadOffset = bROffset.normalized * (sidewalkCollider.size.z * 0.5f + road.Lanes * 0.5f);
+                    Vector3 postPosCenter = prePosCenter + roadOffset;
+
+                    if (f - sidewalkCollider.size.x < 0 || f + sidewalkCollider.size.x > length)
+                        continue;
+
+                    sidewalk.transform.position = postPosCenter;
+                    sidewalk.transform.LookAt(prePosCenter);
+
+                    // Move the sidewalk by the scale of the center of the building
+                    sidewalk.transform.position =
+                        new Vector3(
+                            sidewalk.transform.position.x,
+                            sidewalk.transform.position.y + sidewalkCollider.size.y / 2,
+                            sidewalk.transform.position.z
+                        );
+
+                    // Validate sidewalk and set output
+                    GameObject output = InstantiateValidSidewalk(sidewalk);
+
+                    // The building has been validated and is placed in the scene
+                    if (output != null)
+                        SidewalkList.Add(output);
+                }
+            }
+        }
+    }
+
+    private GameObject InstantiateValidSidewalk(GameObject newGameObject)
+    {
+        if (newGameObject != null)
+        {
+            GameObject newSideWalk = Instantiate(newGameObject);
+
+            if (!BuildingUtilities.IntersectsRoad(newSideWalk))
+            {
+                newSideWalk.transform.parent = _roadParentTransform;
+                return newSideWalk;
+            }
+            else
+            {
+                DestroyImmediate(newSideWalk);
+            }
+        }
+
+        return null;
+    }
+
+    public void ClearRoadSidewalks()
+    {
+        foreach (var sideWalk in SidewalkList)
+        {
+            DestroyImmediate(sideWalk);
+        }
+        SidewalkList.Clear();
+    }
+
     public void SubDivisionEventListener()
     {
         Debug.Log("Road sub division process started");
 
         gameObject.GetComponent<BuildingGenerator>().ClearBuildings();
         CalcRoadSubDivision();
+    }
+
+    public void GenerateRoadSidewalkListener()
+    {
+        ClearRoadSidewalks();
+
+        Debug.Log("Road sidewalk generator process started");
+        GenerateRoadSidewalk();
     }
 }
