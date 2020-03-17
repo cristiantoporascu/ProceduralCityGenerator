@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using Assets.Scripts.PCGEditor;
 using UnityEditor;
 using UnityEngine;
@@ -123,7 +124,7 @@ public class PCGEditor : EditorWindow
         EditorGUILayout.BeginHorizontal();
         GUILayout.Space(PCGEditorStyling.SubCompLeftSpacing);
 
-        EditorGUILayout.LabelField("Number");
+        EditorGUILayout.LabelField("Number variants");
         _pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants =
             EditorGUILayout.IntField(_pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants);
 
@@ -274,19 +275,33 @@ public class PCGEditor : EditorWindow
                 AssetDatabase.CreateFolder("Assets/Resources", "SavedData");
             }
 
-            var roadParent = GameObject.Find("Roads");
-            if (roadParent != null)
-            {
-                var newPrefab = Instantiate(roadParent);
-                newPrefab.tag = "GeneratedRoadData";
-                PrefabUtility.SaveAsPrefabAsset(newPrefab, "Assets/Resources/SavedData/RoadGeneratedData.prefab");
-            }
+            var savedPath = EditorUtility.SaveFilePanel(
+                "Save data into folder",
+                "Assets/Resources/SavedData",
+                "SaveFolder",
+                "");
 
-            var buildingParent = GameObject.Find("Buildings");
-            if (buildingParent != null)
+            if (savedPath.Length != 0)
             {
-                buildingParent.tag = "GeneratedBuildingData";
-                PrefabUtility.SaveAsPrefabAsset(buildingParent, "Assets/Resources/SavedData/BuildingGeneratedData.prefab");
+                if (!AssetDatabase.IsValidFolder(savedPath))
+                {
+                    AssetDatabase.CreateFolder("Assets/Resources/SavedData", savedPath.Split('/').LastOrDefault());
+                }
+
+                var roadParent = GameObject.Find("Roads");
+                if (roadParent != null)
+                {
+                    var newPrefab = Instantiate(roadParent);
+                    newPrefab.tag = "GeneratedRoadData";
+                    PrefabUtility.SaveAsPrefabAsset(newPrefab, savedPath + "/RoadGeneratedData.prefab");
+                }
+
+                var buildingParent = GameObject.Find("Buildings");
+                if (buildingParent != null)
+                {
+                    buildingParent.tag = "GeneratedBuildingData";
+                    PrefabUtility.SaveAsPrefabAsset(buildingParent, savedPath + "/BuildingGeneratedData.prefab");
+                }
             }
         }
     }

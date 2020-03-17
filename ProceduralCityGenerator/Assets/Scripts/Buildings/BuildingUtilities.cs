@@ -65,7 +65,7 @@ namespace Assets.Scripts.Buildings
                         Vector3 roadOffset = bROffset.normalized * (buildingCollider.size.z * 0.5f + current.Lanes * 0.5f + 1.0f /* Sidewalk default width */);
                         Vector3 postPosCenter = prePosCenter + roadOffset;
 
-                        if (f - buildingCollider.size.x < 0 || f + buildingCollider.size.x > length)
+                        if (f - buildingCollider.size.x * 0.5f < 0 || f + buildingCollider.size.x * 0.5f > length)
                             continue;
 
                         building.transform.position = postPosCenter;
@@ -121,24 +121,33 @@ namespace Assets.Scripts.Buildings
             // Can be made more efficient, currently evaluates all roads, check distance if needed
             foreach (var road in RoadGenerator.RoadList)
             {
+                // Get properties of that specific road, direction and positions
                 Vector3 startPos = road.StartPoint.GetVector3Pos();
                 Vector3 endPos = road.EndPoint.GetVector3Pos();
                 Vector3 dir = (startPos - endPos).normalized;
 
-                // Offset from the center of the road with 95% spacing
-                Vector3 offset = new Vector3(-dir.z, 0, dir.x).normalized * (road.Lanes * 0.5f) * 0.95f;
-
-                Ray rayCenter = new Ray(startPos, endPos - startPos);
-                Ray rayLeftSide = new Ray(startPos + offset, (endPos + offset) - (startPos + offset));
-                Ray rayRightSide = new Ray(startPos - offset, (endPos - offset) - (startPos - offset));
-
-                RaycastHit hit = new RaycastHit();
+                // Magnitude of that specific road
                 float distance = Vector2.Distance(road.StartPoint.Position, road.EndPoint.Position);
+                RaycastHit hit = new RaycastHit();
 
-                if (gameObject.GetComponent<BoxCollider>().Raycast(rayCenter, out hit, distance) 
-                    || gameObject.GetComponent<BoxCollider>().Raycast(rayLeftSide, out hit, distance)
-                    || gameObject.GetComponent<BoxCollider>().Raycast(rayRightSide, out hit, distance))
+                // First ray that's passing through the middle of the road
+                Ray rayCenter = new Ray(startPos, endPos - startPos);
+                if (gameObject.GetComponent<BoxCollider>().Raycast(rayCenter, out hit, distance))
                     return true;
+
+                // If the center hasn't been collided, check for all of the possible
+                // lanes if it collides with the object
+                for (var i = 1; i <= road.Lanes; i++)
+                {
+                    Vector3 offset = new Vector3(-dir.z, 0, dir.x).normalized * (i * 0.5f) * 0.95f;
+
+                    Ray rayLeftSide = new Ray(startPos + offset, (endPos + offset) - (startPos + offset));
+                    Ray rayRightSide = new Ray(startPos - offset, (endPos - offset) - (startPos - offset));
+
+                    if (gameObject.GetComponent<BoxCollider>().Raycast(rayLeftSide, out hit, distance)
+                        || gameObject.GetComponent<BoxCollider>().Raycast(rayRightSide, out hit, distance))
+                        return true;
+                }
             }
 
             return false;

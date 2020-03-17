@@ -24,11 +24,14 @@ MonoBehaviour:
     RoadSpacingMinLimit: 1
     RoadSpacingMax: 1.3586028
     RoadSpacingMaxLimit: 20
-    NumberSideWalkVariants: 2
+    NumberSideWalkVariants: 5
     PrefabsListFoldout: 1
     PrefabsSidewalks:
     - {fileID: 5289529357614053930, guid: e627d4bfd8c75934996a8c95d2c18306, type: 3}
     - {fileID: 5712242549632921216, guid: 71a1d69e4de61464cbfed18320cadf12, type: 3}
+    - {fileID: 5289529357614053930, guid: 9f1f6b7cfe06a3b4b8301e788e1b5859, type: 3}
+    - {fileID: 5289529357614053930, guid: 203e1dff95d9ffd48bc855cbcf2d1913, type: 3}
+    - {fileID: 5289529357614053930, guid: fa09525c95da343438c926548a13b2d3, type: 3}
   PcgEditorBuildings:
     PrefabGroupFoldout: 1
     NumberPrefabs: 5
@@ -36,16 +39,16 @@ MonoBehaviour:
     Prefabs:
     - Prefab: {fileID: 1859844526233291239, guid: df7295bc8949a4645b04320dd95988de,
         type: 3}
-      ActiveRange: 0
+      ActiveRange: 0.2
     - Prefab: {fileID: 4903638855111917314, guid: a45d58962d2bc4d4b81b6ec6c99202d3,
         type: 3}
-      ActiveRange: 0.2
+      ActiveRange: 0.4
     - Prefab: {fileID: 8552478589933805361, guid: 3f6424da509eb4a4cb20b1bc8116069b,
         type: 3}
-      ActiveRange: 0.3
+      ActiveRange: 0.5
     - Prefab: {fileID: 3881891698737592044, guid: e9b1d655751f0dc4eba10eb8240922e7,
         type: 3}
-      ActiveRange: 0.5
+      ActiveRange: 0.7
     - Prefab: {fileID: 8939126532354589004, guid: 134c1cfd9ac8e3246bcb166d03d364ee,
         type: 3}
-      ActiveRange: 0.8
+      ActiveRange: 1

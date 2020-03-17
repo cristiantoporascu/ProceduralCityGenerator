@@ -62,6 +62,7 @@ public class RoadGenerator : MonoBehaviour
                     if (tempGO.tag == "Road" && !CheckRoadExists(tempGO))
                     {
                         RoadList.Add(GenRoadEntryFromLineRenderer(tempGO));
+                        DestroyImmediate(tempGO);
                     }
                     else if (tempGO.tag == "Sidewalks")
                     {
@@ -69,9 +70,10 @@ public class RoadGenerator : MonoBehaviour
                         SidewalkList.Add(tempGO);
                     }
                 }
-                
             }
-            DestroyImmediate(roadGenData);
+
+            if (roadGenData.transform.childCount <= 0)
+                DestroyImmediate(roadGenData);
         }
     }
 
@@ -92,8 +94,6 @@ public class RoadGenerator : MonoBehaviour
 
     private void DrawRoads()
     {
-        Debug.Log("Current road number: " + RoadList.Count);
-
         CheckForCurrentRoadStructure();
 
         CreateRoad();
@@ -285,7 +285,7 @@ public class RoadGenerator : MonoBehaviour
                     Vector3 roadOffset = bROffset.normalized * (sidewalkCollider.size.z * 0.5f + road.Lanes * 0.5f);
                     Vector3 postPosCenter = prePosCenter + roadOffset;
 
-                    if (f - sidewalkCollider.size.x < 0 || f + sidewalkCollider.size.x > length)
+                    if (f - sidewalkCollider.size.x * 0.5f < 0 || f + sidewalkCollider.size.x * 0.5f > length)
                         continue;
 
                     sidewalk.transform.position = postPosCenter;
@@ -295,7 +295,7 @@ public class RoadGenerator : MonoBehaviour
                     sidewalk.transform.position =
                         new Vector3(
                             sidewalk.transform.position.x,
-                            sidewalk.transform.position.y + sidewalkCollider.size.y / 2,
+                            sidewalk.transform.position.y + sidewalkCollider.size.y * 0.5f,
                             sidewalk.transform.position.z
                         );
 
@@ -343,6 +343,7 @@ public class RoadGenerator : MonoBehaviour
     {
         Debug.Log("Road sub division process started");
 
+        ClearRoadSidewalks();
         gameObject.GetComponent<BuildingGenerator>().ClearBuildings();
         CalcRoadSubDivision();
     }
