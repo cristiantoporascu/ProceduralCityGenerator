@@ -278,7 +278,6 @@ public class RoadGenerator : MonoBehaviour
 
                 if (sidewalk != null)
                 {
-                    Debug.Log("Sidewalk object");
                     var sidewalkCollider = sidewalk.GetComponent<BoxCollider>();
 
                     // Road offset based on the length of the building

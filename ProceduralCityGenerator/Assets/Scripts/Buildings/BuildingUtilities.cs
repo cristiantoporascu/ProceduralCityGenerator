@@ -36,24 +36,40 @@ namespace Assets.Scripts.Buildings
                 {
                     // The position of the building before offsetting the road
                     Vector3 prePosCenter = endPos + (dir * f);
-                    float perlinVal = Mathf.PerlinNoise(prePosCenter.x / 10f, prePosCenter.z / 10f);
 
                     GameObject building = null;
 
-                    var descOrderBuildPrefabList =
-                        buildingGenerator.PcgEditorBuildings.OrderByDescending(o => o.ActiveRange).ToList();
-                    foreach (var prefab in descOrderBuildPrefabList)
+                    if (buildingGenerator.PcgEditorAreas.Count > 0)
                     {
-                        building = prefab.ActiveRange < perlinVal ? prefab.Prefab : null;
-
-                        if (building != null)
+                        for (var j = 0; j < buildingGenerator.PcgEditorAreas.Count; j++)
                         {
-                            break;
+                            if (buildingGenerator.PcgEditorAreas[j].Gizmo != null
+                                && Vector3.Distance(
+                                    prePosCenter,
+                                    buildingGenerator.PcgEditorAreas[j].Gizmo.transform.position) <= buildingGenerator.PcgEditorAreas[j].AreaRange)
+                                building = buildingGenerator.PcgEditorAreas[j].Prefab;
                         }
+                    }
 
-                        if (descOrderBuildPrefabList.IndexOf(prefab) == descOrderBuildPrefabList.Count - 1)
+                    if (building == null)
+                    {
+                        float perlinVal = Mathf.PerlinNoise(prePosCenter.x / 10f, prePosCenter.z / 10f);
+
+                        var descOrderBuildPrefabList =
+                            buildingGenerator.PcgEditorBuildings.OrderByDescending(o => o.ActiveRange).ToList();
+                        foreach (var prefab in descOrderBuildPrefabList)
                         {
-                            building = descOrderBuildPrefabList[0].Prefab;
+                            building = prefab.ActiveRange < perlinVal ? prefab.Prefab : null;
+
+                            if (building != null)
+                            {
+                                break;
+                            }
+
+                            if (descOrderBuildPrefabList.IndexOf(prefab) == descOrderBuildPrefabList.Count - 1)
+                            {
+                                building = descOrderBuildPrefabList[0].Prefab;
+                            }
                         }
                     }
 

@@ -6,6 +6,7 @@ using UnityEngine;
 public class BuildingGenerator : MonoBehaviour
 {
     [HideInInspector] public List<BuildingsPrefabsEditor> PcgEditorBuildings;
+    [HideInInspector] public List<BuildingsAreasEditor> PcgEditorAreas;
 
     [HideInInspector] public static GameObject BuildingParent;
     [HideInInspector] public static Transform BuildingParentTransform;

@@ -119,61 +119,66 @@ public class PCGEditor : EditorWindow
 
         // -------- ROAD SIDEWALK VARIANTS -------- \\
         GUILayout.Space(15f);
-        EditorGUILayout.LabelField("Road sidewalk");
 
-        EditorGUILayout.BeginHorizontal();
-        GUILayout.Space(PCGEditorStyling.SubCompLeftSpacing);
+        _pcgEditorProps.PcgEditorRoads.SidewalkGroupFoldout =
+            EditorGUILayout.Foldout(_pcgEditorProps.PcgEditorRoads.SidewalkGroupFoldout, "Road sidewalk");
 
-        EditorGUILayout.LabelField("Number variants");
-        _pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants =
-            EditorGUILayout.IntField(_pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants);
-
-        if (_pcgEditorProps.PcgEditorRoads.PrefabsSidewalks != null)
-        {
-            if (_pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants > _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Count)
-            {
-                for (var i = 0; i < _pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants - _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Count; i++)
-                {
-                    _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Add(null);
-                }
-            }
-            else if (_pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants < _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Count)
-            {
-                _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks
-                    .RemoveRange(_pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants, _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Count - _pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants);
-            }
-        }
-        else
-        {
-            _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks = new List<GameObject>();
-        }
-        EditorGUILayout.EndHorizontal();
-
-        if (_pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants > 0)
+        if (_pcgEditorProps.PcgEditorRoads.SidewalkGroupFoldout)
         {
             EditorGUILayout.BeginHorizontal();
-
             GUILayout.Space(PCGEditorStyling.SubCompLeftSpacing);
-            _pcgEditorProps.PcgEditorRoads.PrefabsListFoldout =
-                EditorGUILayout.Foldout(_pcgEditorProps.PcgEditorRoads.PrefabsListFoldout,
-                    new GUIContent("Prefabs", "GameObject => " +
-                                              "The game object which you want to be placed in the scene up which allows multiple variants of sidewalks."));
 
-            if (_pcgEditorProps.PcgEditorRoads.PrefabsListFoldout)
+            EditorGUILayout.LabelField("Number variants");
+            _pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants =
+                EditorGUILayout.IntField(_pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants);
+
+            if (_pcgEditorProps.PcgEditorRoads.PrefabsSidewalks != null)
             {
-                GUILayout.Space(PCGEditorStyling.SubCompLeftSpacing);
-                EditorGUILayout.BeginVertical();
-
-                for (var i = 0; i < _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Count; i++)
+                if (_pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants > _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Count)
                 {
-                    _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks[i] = EditorGUILayout
-                        .ObjectField(_pcgEditorProps.PcgEditorRoads.PrefabsSidewalks[i], typeof(GameObject), true) as GameObject;
+                    for (var i = 0; i < _pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants - _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Count; i++)
+                    {
+                        _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Add(null);
+                    }
+                }
+                else if (_pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants < _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Count)
+                {
+                    _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks
+                        .RemoveRange(_pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants, _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Count - _pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants);
+                }
+            }
+            else
+            {
+                _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks = new List<GameObject>();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            if (_pcgEditorProps.PcgEditorRoads.NumberSideWalkVariants > 0)
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                GUILayout.Space(PCGEditorStyling.SubCompLeftSpacing);
+                _pcgEditorProps.PcgEditorRoads.PrefabsListFoldout =
+                    EditorGUILayout.Foldout(_pcgEditorProps.PcgEditorRoads.PrefabsListFoldout,
+                        new GUIContent("Prefabs", "GameObject => " +
+                                                  "The game object which you want to be placed in the scene up which allows multiple variants of sidewalks."));
+
+                if (_pcgEditorProps.PcgEditorRoads.PrefabsListFoldout)
+                {
+                    GUILayout.Space(PCGEditorStyling.SubCompLeftSpacing);
+                    EditorGUILayout.BeginVertical();
+
+                    for (var i = 0; i < _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks.Count; i++)
+                    {
+                        _pcgEditorProps.PcgEditorRoads.PrefabsSidewalks[i] = EditorGUILayout
+                            .ObjectField(_pcgEditorProps.PcgEditorRoads.PrefabsSidewalks[i], typeof(GameObject), true) as GameObject;
+                    }
+
+                    EditorGUILayout.EndVertical();
                 }
 
-                EditorGUILayout.EndVertical();
+                EditorGUILayout.EndHorizontal();
             }
-
-            EditorGUILayout.EndHorizontal();
         }
 
         GUILayout.Space(10f);
@@ -181,7 +186,7 @@ public class PCGEditor : EditorWindow
         {
             _manager.GetComponent<RoadGenerator>().GenerateRoadSidewalkListener();
         }
-        if (GUILayout.Button("Run Clear Sidewalks"))
+        if (GUILayout.Button("Clear Sidewalks"))
         {
             _manager.GetComponent<RoadGenerator>().ClearRoadSidewalks();
         }
@@ -191,6 +196,8 @@ public class PCGEditor : EditorWindow
     {
         PCGEditorUtility.HeadlineLabel("Building settings");
         GUILayout.Space(15f);
+
+        // -------- BUILDING VARIANTS ON PERLIN -------- \\
 
         _pcgEditorProps.PcgEditorBuildings.PrefabGroupFoldout =
             EditorGUILayout.Foldout(_pcgEditorProps.PcgEditorBuildings.PrefabGroupFoldout, "Building prefabs");
@@ -203,24 +210,24 @@ public class PCGEditor : EditorWindow
             _pcgEditorProps.PcgEditorBuildings.NumberPrefabs =
                 EditorGUILayout.IntField(_pcgEditorProps.PcgEditorBuildings.NumberPrefabs);
 
-            if (_pcgEditorProps.PcgEditorBuildings.Prefabs != null)
+            if (_pcgEditorProps.PcgEditorBuildings.PrefabsBuildings != null)
             {
-                if (_pcgEditorProps.PcgEditorBuildings.NumberPrefabs > _pcgEditorProps.PcgEditorBuildings.Prefabs.Count)
+                if (_pcgEditorProps.PcgEditorBuildings.NumberPrefabs > _pcgEditorProps.PcgEditorBuildings.PrefabsBuildings.Count)
                 {
-                    for (var i = 0; i < _pcgEditorProps.PcgEditorBuildings.NumberPrefabs - _pcgEditorProps.PcgEditorBuildings.Prefabs.Count; i++)
+                    for (var i = 0; i < _pcgEditorProps.PcgEditorBuildings.NumberPrefabs - _pcgEditorProps.PcgEditorBuildings.PrefabsBuildings.Count; i++)
                     {
-                        _pcgEditorProps.PcgEditorBuildings.Prefabs.Add(new BuildingsPrefabsEditor());
+                        _pcgEditorProps.PcgEditorBuildings.PrefabsBuildings.Add(new BuildingsPrefabsEditor());
                     }
                 }
-                else if (_pcgEditorProps.PcgEditorBuildings.NumberPrefabs < _pcgEditorProps.PcgEditorBuildings.Prefabs.Count)
+                else if (_pcgEditorProps.PcgEditorBuildings.NumberPrefabs < _pcgEditorProps.PcgEditorBuildings.PrefabsBuildings.Count)
                 {
-                    _pcgEditorProps.PcgEditorBuildings.Prefabs
-                        .RemoveRange(_pcgEditorProps.PcgEditorBuildings.NumberPrefabs, _pcgEditorProps.PcgEditorBuildings.Prefabs.Count - _pcgEditorProps.PcgEditorBuildings.NumberPrefabs);
+                    _pcgEditorProps.PcgEditorBuildings.PrefabsBuildings
+                        .RemoveRange(_pcgEditorProps.PcgEditorBuildings.NumberPrefabs, _pcgEditorProps.PcgEditorBuildings.PrefabsBuildings.Count - _pcgEditorProps.PcgEditorBuildings.NumberPrefabs);
                 }
             }
             else
             {
-                _pcgEditorProps.PcgEditorBuildings.Prefabs = new List<BuildingsPrefabsEditor>();
+                _pcgEditorProps.PcgEditorBuildings.PrefabsBuildings = new List<BuildingsPrefabsEditor>();
             }
             EditorGUILayout.EndHorizontal();
 
@@ -239,12 +246,83 @@ public class PCGEditor : EditorWindow
                     GUILayout.Space(PCGEditorStyling.SubCompLeftSpacing);
                     EditorGUILayout.BeginVertical();
 
-                    for (var i = 0; i < _pcgEditorProps.PcgEditorBuildings.Prefabs.Count; i++)
+                    for (var i = 0; i < _pcgEditorProps.PcgEditorBuildings.PrefabsBuildings.Count; i++)
                     {
                         EditorGUILayout.BeginHorizontal();
-                        _pcgEditorProps.PcgEditorBuildings.Prefabs[i].Prefab = EditorGUILayout
-                            .ObjectField(_pcgEditorProps.PcgEditorBuildings.Prefabs[i].Prefab, typeof(GameObject), true) as GameObject;
-                        _pcgEditorProps.PcgEditorBuildings.Prefabs[i].ActiveRange = EditorGUILayout.FloatField(_pcgEditorProps.PcgEditorBuildings.Prefabs[i].ActiveRange);
+                        _pcgEditorProps.PcgEditorBuildings.PrefabsBuildings[i].Prefab = EditorGUILayout
+                            .ObjectField(_pcgEditorProps.PcgEditorBuildings.PrefabsBuildings[i].Prefab, typeof(GameObject), true) as GameObject;
+                        _pcgEditorProps.PcgEditorBuildings.PrefabsBuildings[i].ActiveRange = EditorGUILayout.FloatField(_pcgEditorProps.PcgEditorBuildings.PrefabsBuildings[i].ActiveRange);
+                        EditorGUILayout.EndHorizontal();
+                    }
+
+                    EditorGUILayout.EndVertical();
+                }
+
+                EditorGUILayout.EndHorizontal();
+            }
+        }
+
+        // -------- BUILDING VARIANTS ON AREA TYPE -------- \\
+        GUILayout.Space(15f);
+
+        _pcgEditorProps.PcgEditorBuildings.AreasGroupFoldout =
+            EditorGUILayout.Foldout(_pcgEditorProps.PcgEditorBuildings.AreasGroupFoldout, "Building area");
+        if (_pcgEditorProps.PcgEditorBuildings.AreasGroupFoldout)
+        {
+            EditorGUILayout.BeginHorizontal();
+            GUILayout.Space(PCGEditorStyling.SubCompLeftSpacing);
+
+            EditorGUILayout.LabelField("Number");
+            _pcgEditorProps.PcgEditorBuildings.AreasNumber =
+                EditorGUILayout.IntField(_pcgEditorProps.PcgEditorBuildings.AreasNumber);
+
+            if (_pcgEditorProps.PcgEditorBuildings.AreasProperties != null)
+            {
+                if (_pcgEditorProps.PcgEditorBuildings.AreasNumber > _pcgEditorProps.PcgEditorBuildings.AreasProperties.Count)
+                {
+                    for (var i = 0; i < _pcgEditorProps.PcgEditorBuildings.AreasNumber - _pcgEditorProps.PcgEditorBuildings.AreasProperties.Count; i++)
+                    {
+                        _pcgEditorProps.PcgEditorBuildings.AreasProperties.Add(new BuildingsAreasEditor());
+                    }
+                }
+                else if (_pcgEditorProps.PcgEditorBuildings.AreasNumber < _pcgEditorProps.PcgEditorBuildings.AreasProperties.Count)
+                {
+                    _pcgEditorProps.PcgEditorBuildings.AreasProperties
+                        .RemoveRange(_pcgEditorProps.PcgEditorBuildings.AreasNumber, _pcgEditorProps.PcgEditorBuildings.AreasProperties.Count - _pcgEditorProps.PcgEditorBuildings.AreasNumber);
+                }
+            }
+            else
+            {
+                _pcgEditorProps.PcgEditorBuildings.AreasProperties = new List<BuildingsAreasEditor>();
+            }
+            EditorGUILayout.EndHorizontal();
+
+            if (_pcgEditorProps.PcgEditorBuildings.AreasNumber > 0)
+            {
+                EditorGUILayout.BeginHorizontal();
+
+                GUILayout.Space(PCGEditorStyling.SubCompLeftSpacing);
+                _pcgEditorProps.PcgEditorBuildings.AreasListFoldout =
+                    EditorGUILayout.Foldout(_pcgEditorProps.PcgEditorBuildings.AreasListFoldout,
+                        new GUIContent("Prefabs", "GameObject | Area name | Range => " +
+                                                  "The game object which you want to be placed in the scene up to the specified range based on a specific area name"));
+
+                if (_pcgEditorProps.PcgEditorBuildings.AreasListFoldout)
+                {
+                    GUILayout.Space(PCGEditorStyling.SubCompLeftSpacing);
+                    EditorGUILayout.BeginVertical();
+
+                    for (var i = 0; i < _pcgEditorProps.PcgEditorBuildings.AreasProperties.Count; i++)
+                    {
+                        EditorGUILayout.BeginHorizontal();
+                        _pcgEditorProps.PcgEditorBuildings.AreasProperties[i].Prefab = EditorGUILayout
+                            .ObjectField(_pcgEditorProps.PcgEditorBuildings.AreasProperties[i].Prefab, typeof(GameObject), true) as GameObject;
+                        _pcgEditorProps.PcgEditorBuildings.AreasProperties[i].AreaName = EditorGUILayout.TextField(_pcgEditorProps.PcgEditorBuildings.AreasProperties[i].AreaName);
+                        _pcgEditorProps.PcgEditorBuildings.AreasProperties[i].AreaRange = EditorGUILayout.FloatField(_pcgEditorProps.PcgEditorBuildings.AreasProperties[i].AreaRange);
+                        if (GUILayout.Button("Create"))
+                        {
+                            _pcgEditorProps.PcgEditorBuildings.AreasProperties[i].Gizmo = new GameObject(_pcgEditorProps.PcgEditorBuildings.AreasProperties[i].AreaName);
+                        }
                         EditorGUILayout.EndHorizontal();
                     }
 
@@ -337,10 +415,10 @@ public class PCGEditor : EditorWindow
 
         SaveGeneratedMap();
 
-        SaveDataInComponent();
-
         GUILayout.Space(30f);
         GUILayout.EndScrollView();
+
+        SaveDataInComponent();
     }
 
     private void SaveDataInComponent()
@@ -348,7 +426,12 @@ public class PCGEditor : EditorWindow
         _manager.GetComponent<RoadGenerator>().PcgEditorRoads =
             _pcgEditorProps.PcgEditorRoads;
 
-        _manager.GetComponent<BuildingGenerator>().PcgEditorBuildings =
-            _pcgEditorProps.PcgEditorBuildings.Prefabs;
+
+        var buildingGenerator = _manager.GetComponent<BuildingGenerator>();
+
+        buildingGenerator.PcgEditorBuildings =
+            _pcgEditorProps.PcgEditorBuildings.PrefabsBuildings;
+        buildingGenerator.PcgEditorAreas =
+            _pcgEditorProps.PcgEditorBuildings.AreasProperties;
     }
 }

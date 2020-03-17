@@ -7,6 +7,7 @@ namespace Assets.Scripts.PCGEditor
     [Serializable]
     public class PCGEditorRoads
     {
+        // ---- Road properties ---- \\
         public int LaneDropdownIndex = 0;
         public int NumberLanes = 1;
 
@@ -22,7 +23,11 @@ namespace Assets.Scripts.PCGEditor
         public float RoadSpacingMax = 10.0f;
         public float RoadSpacingMaxLimit = 20.0f;
 
+
+        // ---- Sidewalks properties ---- \\
+        public bool SidewalkGroupFoldout;
         public int NumberSideWalkVariants;
+
         public bool PrefabsListFoldout;
         public List<GameObject> PrefabsSidewalks;
     }
@@ -35,7 +40,14 @@ namespace Assets.Scripts.PCGEditor
         public int NumberPrefabs;
 
         public bool PrefabsListFoldout;
-        public List<BuildingsPrefabsEditor> Prefabs;
+        public List<BuildingsPrefabsEditor> PrefabsBuildings;
+
+        // ---- Areas properties ---- \\
+        public bool AreasGroupFoldout;
+        public int AreasNumber;
+
+        public bool AreasListFoldout;
+        public List<BuildingsAreasEditor> AreasProperties;
     }
 
     [Serializable]
@@ -43,6 +55,15 @@ namespace Assets.Scripts.PCGEditor
     {
         public GameObject Prefab;
         public float ActiveRange;
+    }
+
+    [Serializable]
+    public class BuildingsAreasEditor
+    {
+        [HideInInspector] public GameObject Gizmo;
+        public GameObject Prefab;
+        public string AreaName;
+        public float AreaRange;
     }
 }
 
